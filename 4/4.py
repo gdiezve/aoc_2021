@@ -22,6 +22,21 @@ def get_winner_board_score(draw_list, boards):
                 return get_score(board, number)
 
 
+def get_loser_board_score(draw_list, boards):
+    marked_boards = boards
+    for number in draw_list:
+        for board in marked_boards:
+            np.place(board, board == number, -1)
+
+        if len(marked_boards) == 1 and (True in np.all(marked_boards[0] == -1, axis=0) or
+                                        True in np.all(marked_boards[0] == -1, axis=1)):
+            return get_score(marked_boards[0], number)
+
+        marked_boards = [marked_board for marked_board in marked_boards
+                         if not True in np.all(marked_board == -1, axis=0) and
+                         not True in np.all(marked_board == -1, axis=1)]
+
+
 def get_score(board, number):
     sum = 0
     for row in board:
@@ -42,3 +57,5 @@ if __name__ == "__main__":
             file = file[5:]
         winner_board = get_winner_board_score(draw_list, boards)
         print('Score for winner board is: ', winner_board)
+        loser_board = get_loser_board_score(draw_list, boards)
+        print('Score for loser board is: ', loser_board)
